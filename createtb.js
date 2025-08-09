@@ -55,6 +55,7 @@ const crearTablas = async () => {
       );
     `);
 
+    // Crear tabla usuarios
     await pool.query(`
       CREATE TABLE IF NOT EXISTS usuarios (
         id SERIAL PRIMARY KEY,
@@ -66,8 +67,26 @@ const crearTablas = async () => {
     `);
 
     console.log("✅ Tablas creadas correctamente.");
+
+    // Verificar si ya existe el usuario admin
+    const res = await pool.query(
+      "SELECT * FROM usuarios WHERE usuario = $1",
+      ['admin']
+    );
+
+    if (res.rows.length === 0) {
+      // Insertar usuario admin
+      await pool.query(
+        "INSERT INTO usuarios (nombre, usuario, contrasena, rol) VALUES ($1, $2, $3, $4)",
+        ['Administrador', 'admin', '1234', 'docente'] // Cambia la contraseña aquí si quieres
+      );
+      console.log("✅ Usuario admin creado.");
+    } else {
+      console.log("ℹ️ Usuario admin ya existe.");
+    }
+
   } catch (err) {
-    console.error("❌ Error creando las tablas:", err);
+    console.error("❌ Error creando las tablas o usuario:", err);
   } finally {
     await pool.end();
   }
