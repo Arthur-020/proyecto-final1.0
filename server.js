@@ -291,12 +291,23 @@ app.post('/editar/:id', checkRole('docente'), upload.single('imagen'), async (re
 });
 
 // =================== ELIMINAR COMPONENTE Y SU IMAGEN EN CLOUDINARY ===================
+function getPublicIdFromUrl(url) {
+  if (!url) return null;
+  const parts = url.split('/');
+  const filename = parts.pop();
+  const uploadIndex = parts.indexOf('upload');
+  if (uploadIndex === -1) return null;
+  const folderParts = parts.slice(uploadIndex + 1);
+  const folder = folderParts.join('/');
+  const publicId = folder ? `${folder}/${filename}` : filename;
+  return publicId.replace(/\.[^/.]+$/, "");
+}
+
 app.get('/eliminar/:id', checkRole('docente'), async (req, res) => {
   try {
     const id = req.params.id;
-
-    // Obtener URL de la imagen
     const compRes = await pool.query('SELECT imagen FROM componentes WHERE id = $1', [id]);
+
     if (compRes.rows.length > 0 && compRes.rows[0].imagen) {
       const publicId = getPublicIdFromUrl(compRes.rows[0].imagen);
       if (publicId) {
@@ -304,7 +315,6 @@ app.get('/eliminar/:id', checkRole('docente'), async (req, res) => {
       }
     }
 
-    // Eliminar componente
     await pool.query('DELETE FROM componentes WHERE id = $1', [id]);
     res.redirect('/inventario');
   } catch (err) {
@@ -312,6 +322,7 @@ app.get('/eliminar/:id', checkRole('docente'), async (req, res) => {
     res.status(500).send('Error al eliminar componente');
   }
 });
+
 
 // =================== CATEGORÍAS Y UBICACIONES ===================
 app.get('/categorias_ubicaciones', async (req, res) => {
