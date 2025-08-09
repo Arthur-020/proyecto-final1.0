@@ -306,23 +306,29 @@ function getPublicIdFromUrl(url) {
 app.get('/eliminar/:id', checkRole('docente'), async (req, res) => {
   try {
     const id = req.params.id;
-    const compRes = await pool.query('SELECT imagen FROM componentes WHERE id = $1', [id]);
 
+    // Eliminar historial relacionado
+    await pool.query('DELETE FROM historial WHERE componente_id = $1', [id]);
+
+    // Obtener URL de la imagen antes de borrar el componente
+    const compRes = await pool.query('SELECT imagen FROM componentes WHERE id = $1', [id]);
     if (compRes.rows.length > 0 && compRes.rows[0].imagen) {
       const publicId = getPublicIdFromUrl(compRes.rows[0].imagen);
+      console.log('PublicId a eliminar en Cloudinary:', publicId); // Para depurar
       if (publicId) {
         await cloudinary.uploader.destroy(publicId);
       }
     }
 
+    // Eliminar componente
     await pool.query('DELETE FROM componentes WHERE id = $1', [id]);
+
     res.redirect('/inventario');
   } catch (err) {
     console.error(err);
     res.status(500).send('Error al eliminar componente');
   }
 });
-
 
 // =================== CATEGORÍAS Y UBICACIONES ===================
 app.get('/categorias_ubicaciones', async (req, res) => {
