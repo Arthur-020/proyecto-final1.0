@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menú Principal - Inventario INA</title>
+  <link rel="stylesheet" href="/estilos/menu.css" />
+</head>
+<body>
+  <h1>Menú Principal</h1>
+  <p>Usuario: <%= user.nombre %> (<%= user.rol %>) | <a href="/logout">Cerrar sesión</a></p>
+  
+  <ul>
+    <li><a href="/inventario">📦 Inventario de componentes</a></li>
+    <li><a href="/categorias_ubicaciones">📁 Categorías y ubicaciones</a></li>
+    <li><a href="/historial">🧾 Historial de movimientos</a></li>
+
+    <% if (user.rol === 'docente') { %>
+      <li><a href="/usuarios">👤 Gestión de usuarios</a></li>
+    <% } %>
+  </ul>
+</body>
+</html>

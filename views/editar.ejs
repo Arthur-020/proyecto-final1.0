@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar componente</title>
+</head>
+<body>
+  <h1>Editar componente: <%= componente.nombre %></h1>
+
+  <form action="/editar/<%= componente.id %>" method="POST" enctype="multipart/form-data">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" value="<%= componente.nombre %>" required><br>
+
+    <label>Tipo:</label>
+    <select name="tipo" required>
+      <% categorias.forEach(categoria => { %>
+        <option value="<%= categoria.id %>" <%= categoria.id === componente.tipo ? 'selected' : '' %>>
+          <%= categoria.nombre %>
+        </option>
+      <% }) %>
+    </select><br>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" value="<%= componente.cantidad %>" required><br>
+
+    <label>Ubicación:</label>
+    <select name="ubicacion" required>
+      <% ubicaciones.forEach(ubicacion => { %>
+        <option value="<%= ubicacion.id %>" <%= ubicacion.id === componente.ubicacion ? 'selected' : '' %>>
+          <%= ubicacion.nombre %>
+        </option>
+      <% }) %>
+    </select><br>
+
+    <label>Estado:</label>
+    <input type="text" name="estado" value="<%= componente.estado %>" required><br>
+
+    <label>Descripción:</label>
+    <textarea name="descripcion" required><%= componente.descripcion %></textarea><br>
+
+    <label>Imagen nueva (opcional):</label>
+    <input type="file" name="imagen"><br>
+
+    <button type="submit">Actualizar</button>
+  </form>
+
+  <br>
+  <a href="/inventario">⬅ Volver al inventario</a>
+</body>
+</html>

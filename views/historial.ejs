@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historial de Movimientos</title>
+  <link rel="stylesheet" href="/estilos/estilos.css" />
+</head>
+<body>
+  <h1>🧾 Historial de Movimientos</h1>
+
+  <% if (user && user.rol === 'docente') { %>
+  <h2>Registrar nuevo movimiento</h2>
+  <form action="/historial" method="POST">
+    <label>ID del Componente:</label>
+    <input type="number" name="componente_id" required><br>
+
+    <label>Tipo de Movimiento:</label>
+    <select name="movimiento" required>
+      <option value="ingreso">Ingreso</option>
+      <option value="salida">Salida</option>
+      <option value="préstamo">Préstamo</option>
+      <option value="devolución">Devolución</option>
+    </select><br>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" required><br>
+
+    <label>Persona (si aplica):</label>
+    <input type="text" name="persona"><br>
+
+    <label>Observaciones:</label>
+    <textarea name="observaciones"></textarea><br>
+
+    <button type="submit">Registrar movimiento</button>
+  </form>
+  <% } %>
+  <br>
+
+<form method="get" action="/historial/buscar">
+  <input type="text" name="persona" placeholder="Buscar por persona" required>
+  <button type="submit">Buscar</button>
+  <a href="/historial" style="margin-left:10px;">Limpiar búsqueda</a>
+</form>
+
+
+
+
+
+
+  <h2>Movimientos registrados</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Componente</th>
+        <th>Movimiento</th>
+        <th>Cantidad</th>
+        <th>Persona</th>
+        <th>Observaciones</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% movimientos.forEach(m => { %>
+        <tr>
+          <td><%= m.id %></td>
+          <td><%= m.componente_nombre %></td> <!-- aquí usar componente (nombre) -->
+          <td><%= m.movimiento %></td> <!-- corregir a tipo_movimiento -->
+          <td><%= m.cantidad %></td>
+          <td><%= m.persona || '-' %></td>
+          <td><%= m.observaciones || '-' %></td>
+          <td><%= new Date(m.fecha).toLocaleString() %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <a href="/">⬅ Volver al menú principal</a>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Componente</title>
+</head>
+<body>
+  <h1>Registrar nuevo componente electrónico</h1>
+<form action="/agregar" method="POST" enctype="multipart/form-data">
+  <label for="nombre">Nombre:</label>
+  <input type="text" name="nombre" required><br>
+
+  <label for="tipo">Categoría:</label>
+  <select name="tipo" id="tipo">
+    <% categorias.forEach(categoria => { %>
+      <option value="<%= categoria.id %>"><%= categoria.nombre %></option>
+    <% }) %>
+  </select><br>
+
+  <label for="cantidad">Cantidad:</label>
+  <input type="number" name="cantidad" required><br> 
+
+  <label for="ubicacion">Ubicación:</label>
+  <select name="ubicacion" id="ubicacion">
+    <% ubicaciones.forEach(ubicacion => { %>
+      <option value="<%= ubicacion.id %>"><%= ubicacion.nombre %></option>
+    <% }) %>
+  </select><br>
+
+  <label for="estado">Estado:</label>
+  <input type="text" name="estado"><br>
+
+  <label for="descripcion">Descripción:</label>
+  <textarea name="descripcion"></textarea><br>
+
+  <label for="imagen">Imagen:</label>
+  <input type="file" name="imagen"><br>
+
+  <button type="submit">Guardar</button>
+</form>
+
+  <a href="/inventario">⬅ Volver al inventario</a>
+</body>
+</html>
+
+
+

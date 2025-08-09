@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario de Componentes Electrónicos</title>
+  <link rel="stylesheet" href="/estilos.css">
+</head>
+<body>
+  <h1>📦 Inventario de Componentes Electrónicos</h1>
+  <% if (user && user.rol === 'docente') { %>
+  <a href="/registro">Agregar nuevo componente</a>
+  <% } %>
+
+<form action="/inventario" method="GET">
+  <input type="text" name="busqueda" placeholder="🔍 Buscar por nombre" value="<%= busqueda || '' %>">
+
+  <select name="tipo">
+    <option value="">-- Filtrar por tipo --</option>
+    <% categorias.forEach(cat => { %>
+      <option value="<%= cat.id %>" <%= tipo == cat.id ? 'selected' : '' %>><%= cat.nombre %></option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Buscar</button>
+
+  <% if (busqueda || tipo) { %>
+    <a href="/inventario">Limpiar filtros</a>
+  <% } %>
+</form>
+
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Ubicación</th>
+        <th>Estado</th>
+        <th>Descripción</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+<tbody>
+  <% componentes.forEach(componente => { %>
+    <tr>
+      <td><%= componente.id %></td>
+      <td><%= componente.nombre %></td>
+      <td><%= componente.tipo_nombre || 'Sin tipo' %></td>
+      <td><%= componente.cantidad %></td>
+      <td><%= componente.ubicacion_nombre || 'Sin ubicación' %></td>
+      <td><%= componente.estado %></td>
+      <td><%= componente.descripcion %></td>
+      <td>
+        <% if (componente.imagen) { %>
+          <img src="/imagenes/<%= componente.imagen %>" width="50" />
+        <% } else { %>
+          Sin imagen
+        <% } %>
+      </td>
+      <% if (user && user.rol === 'docente') { %>
+      <td>
+        <a href="/editar/<%= componente.id %>">Editar</a>
+        <a href="/eliminar/<%= componente.id %>" onclick="return confirm('¿Estás seguro de eliminar este componente?');">Eliminar</a>
+      </td>
+      <% } %>
+    </tr>
+  <% }); %>
+</tbody>
+
+  </table>
+  <a href="/">⬅ Volver al menú principal</a>
+</body>
+</html>

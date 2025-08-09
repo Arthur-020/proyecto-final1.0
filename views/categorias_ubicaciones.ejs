@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Categorías y Ubicaciones</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .flex-container {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+    .col {
+      flex: 1;
+      max-width: 400px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+   
+    a.selected {
+      font-weight: bold;
+      color: green;
+    }
+    button {
+      cursor: pointer;
+    }
+
+    th, td {
+      border: 1px solid #999;
+      padding: 6px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>📁 Categorías y Ubicaciones</h1>
+
+  <div class="flex-container">
+    <div class="col">
+      <% if (user && user.rol === 'docente') { %>
+      <h2>Agregar Categoría</h2>
+      <form method="POST" action="/categorias_ubicaciones/categorias">
+        <input type="text" name="nombre" placeholder="Nombre de la categoría" required />
+        <button type="submit">Agregar</button>
+      </form>
+      <% } %>
+
+      <h3>Categorías</h3>
+      <ul>
+        <% categorias.forEach(cat => { %>
+          <li>
+            <a href="/categorias_ubicaciones?categoria=<%= cat.id %>" class="<%= (categoria == cat.id) ? 'selected' : '' %>">
+              <%= cat.nombre %>
+            </a>
+            <% if (user && user.rol === 'docente') { %>
+            <form method="POST" action="/categorias_ubicaciones/categorias/eliminar/<%= cat.id %>" onsubmit="return confirm('¿Eliminar categoría <%= cat.nombre %>?');" style="margin:0;">
+              <button type="submit">Eliminar</button>
+            </form>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="col">
+      <% if (user && user.rol === 'docente') { %>
+      <h2>Agregar Ubicación</h2>
+      <form method="POST" action="/categorias_ubicaciones/ubicaciones">
+        <input type="text" name="nombre" placeholder="Nombre de la ubicación" required />
+        <button type="submit">Agregar</button>
+      </form>
+      <% } %>
+
+      <h3>Ubicaciones</h3>
+      <ul>
+        <% ubicaciones.forEach(ubi => { %>
+          <li>
+            <a href="/categorias_ubicaciones?ubicacion=<%= ubi.id %>" class="<%= (ubicacion == ubi.id) ? 'selected' : '' %>">
+              <%= ubi.nombre %>
+            </a>
+            <% if (user && user.rol === 'docente') { %>
+            <form method="POST" action="/categorias_ubicaciones/ubicaciones/eliminar/<%= ubi.id %>" onsubmit="return confirm('¿Eliminar ubicación <%= ubi.nombre %>?');" style="margin:0;">
+              <button type="submit">Eliminar</button>
+            </form>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+
+  <% if (categoria || ubicacion) { %>
+    <h2>Componentes filtrados</h2>
+    <% if (!componentes || componentes.length === 0) { %>
+      <p>No hay componentes para esta selección.</p>
+    <% } else { %>
+      <table border="1" cellpadding="5">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Ubicación</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% componentes.forEach(comp => { %>
+            <tr>
+              <td><%= comp.nombre %></td>
+              <td><%= comp.categoria_nombre || 'Sin categoría' %></td>
+              <td><%= comp.ubicacion_nombre || 'Sin ubicación' %></td>
+              <td><%= comp.cantidad %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  <% } %>
+
+  <a href="/">⬅ Volver al menú principal</a>
+</body>
+</html>
