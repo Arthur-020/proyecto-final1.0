@@ -8,7 +8,7 @@ const cloudinary = require('cloudinary').v2;
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configurar Cloudinary con variables de entorno (asegúrate de ponerlas en Render)
+// Configurar Cloudinary con variables de entorno
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'servidor')));
 
 // Configurar sesiones
 app.use(session({
-  secret: 'clave_super_secreta', // cambia esto en producción
+  secret: 'clave_super_secreta',
   resave: false,
   saveUninitialized: false,
 }));
@@ -58,6 +58,21 @@ function checkRole(role) {
       res.status(403).send('Acceso denegado');
     }
   };
+}
+
+// Función para extraer public_id de Cloudinary desde la URL
+function getPublicIdFromUrl(url) {
+  if (!url) return null;
+  try {
+    const parts = url.split('/upload/');
+    if (parts.length < 2) return null;
+    let publicIdWithExtension = parts[1];
+    const lastDot = publicIdWithExtension.lastIndexOf('.');
+    if (lastDot === -1) return publicIdWithExtension;
+    return publicIdWithExtension.substring(0, lastDot);
+  } catch {
+    return null;
+  }
 }
 
 // =================== LOGIN Y LOGOUT ===================
@@ -275,9 +290,21 @@ app.post('/editar/:id', checkRole('docente'), upload.single('imagen'), async (re
   }
 });
 
+// =================== ELIMINAR COMPONENTE Y SU IMAGEN EN CLOUDINARY ===================
 app.get('/eliminar/:id', checkRole('docente'), async (req, res) => {
   try {
     const id = req.params.id;
+
+    // Obtener URL de la imagen
+    const compRes = await pool.query('SELECT imagen FROM componentes WHERE id = $1', [id]);
+    if (compRes.rows.length > 0 && compRes.rows[0].imagen) {
+      const publicId = getPublicIdFromUrl(compRes.rows[0].imagen);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId);
+      }
+    }
+
+    // Eliminar componente
     await pool.query('DELETE FROM componentes WHERE id = $1', [id]);
     res.redirect('/inventario');
   } catch (err) {
