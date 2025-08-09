@@ -3,10 +3,17 @@ const multer = require('multer');
 const path = require('path');
 const session = require('express-session');
 const { Pool } = require('pg');
-require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configurar Cloudinary con variables de entorno (asegúrate de ponerlas en Render)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Conexión a PostgreSQL
 const pool = new Pool({
@@ -16,7 +23,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
 
 // Middleware y configuración
 app.set('view engine', 'ejs');
@@ -30,11 +36,8 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-// Multer: configuración para subir imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'servidor/imagenes'),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
+// Multer: almacenar en memoria para luego subir a Cloudinary
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Middleware para verificar si está autenticado
@@ -58,13 +61,10 @@ function checkRole(role) {
 }
 
 // =================== LOGIN Y LOGOUT ===================
-
-// Ruta Login (GET)
 app.get('/login', (req, res) => {
   res.render('login', { error: null });
 });
 
-// Ruta Login (POST)
 app.post('/login', async (req, res) => {
   const { usuario, contrasena } = req.body;
   try {
@@ -89,7 +89,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Ruta Logout
 app.get('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/login'));
 });
@@ -194,12 +193,26 @@ app.get('/registro', checkRole('docente'), async (req, res) => {
 
 app.post('/agregar', checkRole('docente'), upload.single('imagen'), async (req, res) => {
   const { nombre, descripcion, cantidad, tipo, ubicacion, estado } = req.body;
-  const imagen = req.file ? req.file.filename : null;
   try {
+    let imagenUrl = null;
+
+    if (req.file) {
+      imagenUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'inventario' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result.secure_url);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    }
+
     await pool.query(
       `INSERT INTO componentes (nombre, descripcion, cantidad, tipo, ubicacion, estado, imagen)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [nombre, descripcion, cantidad, tipo, ubicacion, estado, imagen]
+      [nombre, descripcion, cantidad, tipo, ubicacion, estado, imagenUrl]
     );
     res.redirect('/inventario');
   } catch (err) {
@@ -230,16 +243,30 @@ app.get('/editar/:id', checkRole('docente'), async (req, res) => {
 app.post('/editar/:id', checkRole('docente'), upload.single('imagen'), async (req, res) => {
   const id = req.params.id;
   const { nombre, descripcion, cantidad, tipo, ubicacion, estado } = req.body;
-  let query, params;
-  if (req.file) {
-    const imagen = req.file.filename;
-    query = `UPDATE componentes SET nombre=$1, descripcion=$2, cantidad=$3, tipo=$4, ubicacion=$5, estado=$6, imagen=$7 WHERE id=$8`;
-    params = [nombre, descripcion, cantidad, tipo, ubicacion, estado, imagen, id];
-  } else {
-    query = `UPDATE componentes SET nombre=$1, descripcion=$2, cantidad=$3, tipo=$4, ubicacion=$5, estado=$6 WHERE id=$7`;
-    params = [nombre, descripcion, cantidad, tipo, ubicacion, estado, id];
-  }
   try {
+    let imagenUrl;
+    if (req.file) {
+      imagenUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'inventario' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result.secure_url);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+    }
+
+    let query, params;
+    if (imagenUrl) {
+      query = `UPDATE componentes SET nombre=$1, descripcion=$2, cantidad=$3, tipo=$4, ubicacion=$5, estado=$6, imagen=$7 WHERE id=$8`;
+      params = [nombre, descripcion, cantidad, tipo, ubicacion, estado, imagenUrl, id];
+    } else {
+      query = `UPDATE componentes SET nombre=$1, descripcion=$2, cantidad=$3, tipo=$4, ubicacion=$5, estado=$6 WHERE id=$7`;
+      params = [nombre, descripcion, cantidad, tipo, ubicacion, estado, id];
+    }
+
     await pool.query(query, params);
     res.redirect('/inventario');
   } catch (err) {
