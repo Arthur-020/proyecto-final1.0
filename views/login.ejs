@@ -4,60 +4,222 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Inventario INA</title>
-  
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
   <style>
-    body {
+    /* Body y contenedor principal */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
       background: url("/imagenes/n3.jpg") no-repeat center center fixed;
       background-size: cover;
     }
 
+    /* Partículas sobre el fondo */
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    /* Contenedor central para la tarjeta */
+    .main-container {
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* Tarjeta login */
     .login-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
-      padding: 30px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 40px 30px;
       max-width: 400px;
       width: 100%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
+      animation: slideDownFade 0.8s ease-out;
+    }
+
+    /* Contenedor de logos */
+    .logos-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
     }
 
     .login-logo {
-      width: 120px;
-      height: auto;
-      display: block;
-      margin: 0 auto 20px auto;
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Campos de formulario */
+    .form-control {
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 8px #D1903F;
+      border-color: #E68C1C;
+    }
+
+    /* Botones */
+    .btn-primary {
+      background-color: #EDA232; 
+      border: 2px solid #F0AA11; 
+      border-radius: 50px;
+      padding: 10px 0;
+      font-weight: 500;
+      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.03);
+      background-color: #CC8023;
+      border: 2px solid #F0AA11; 
+      box-shadow: 0 0 10px rgba(239, 187, 117, 0.8);
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0,0,0,0.5);
+      color: white;
+      padding: 12px 0;
+      text-align: center;
+      font-size: 0.85rem;
+      z-index: 1;
+    }
+
+    footer a {
+      color: #ffc107;
+      text-decoration: none;
+      margin: 0 6px;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    footer a:hover {
+      color: #fff;
+      text-shadow: 0 0 3px #ffc107;
+      text-decoration: underline;
+    }
+
+    /* Animación de entrada */
+    @keyframes slideDownFade {
+      0% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsivo */
+    @media(max-width: 576px) {
+      .login-card {
+        padding: 30px 20px;
+      }
+      .login-logo {
+        width: 70px;
+        height: 70px;
+      }
     }
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
-  <div class="login-card">
-    <!-- Imagen centrada -->
-    <img src="/imagenes/n2.jpg" alt="Logo" class="login-logo">
+<body>
 
-    <h3 class="text-center mb-4">Iniciar sesión</h3>
+  <!-- Partículas -->
+  <div id="particles-js"></div>
 
-    <% if (typeof error !== 'undefined' && error) { %>
-      <div class="alert alert-danger text-center"><%= error %></div>
-    <% } %>
-
-    <form action="/login" method="POST">
-      <div class="mb-3">
-        <label for="usuario" class="form-label">Usuario:</label>
-        <input type="text" class="form-control" name="usuario" required placeholder="Ingrese su usuario">
+  <!-- Contenedor principal -->
+  <div class="main-container">
+    <div class="login-card">
+      <div class="logos-container">
+        <img src="/imagenes/n2.jpg" alt="Logo 1" class="login-logo">
+        <img src="/imagenes/n6.png" alt="Logo 2" class="login-logo">
       </div>
+      
+      <h3 class="mb-4 text-white">Iniciar sesión</h3>
 
-      <div class="mb-3">
-        <label for="contrasena" class="form-label">Contraseña:</label>
-        <input type="password" class="form-control" name="contrasena" required placeholder="Ingrese su contraseña">
-      </div>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger text-center"><%= error %></div>
+      <% } %>
 
-      <button type="submit" class="btn btn-primary w-100">Entrar</button>
-    </form>
+      <form action="/login" method="POST">
+        <div class="mb-3 text-start">
+          <label for="usuario" class="form-label text-white">Usuario:</label>
+          <input type="text" class="form-control" name="usuario" required placeholder="Ingrese su usuario">
+        </div>
+
+        <div class="mb-3 text-start">
+          <label for="contrasena" class="form-label text-white">Contraseña:</label>
+          <input type="password" class="form-control" name="contrasena" required placeholder="Ingrese su contraseña">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+      </form>
+    </div>
   </div>
 
-  <!-- Bootstrap JS (opcional, solo si necesitas componentes interactivos) -->
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Instituto Nuevo Amanecer - Todos los derechos reservados
+    <br>
+    Síguenos: 
+    <a href="https://www.facebook.com/inst.itisna/photos?locale=es_LA" target="_blank">Facebook</a> |
+    <a href="#" target="_blank">Instagram</a> |
+    <a href="#" target="_blank">Tiktok</a>
+  </footer>
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Partículas config -->
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 40 },
+        "color": { "value": "#ffffff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.3 },
+        "size": { "value": 3 },
+        "line_linked": { "enable": true, "distance": 120, "color": "#ffffff", "opacity": 0.2, "width": 1 },
+        "move": { "enable": true, "speed": 1 }
+      },
+      "interactivity": {
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
 </body>
 </html>
