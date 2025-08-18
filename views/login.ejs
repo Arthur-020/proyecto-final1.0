@@ -2,53 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Inventario INA</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: Arial, sans-serif;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-
-      /* Fondo con imagen */
-      background: url("/imagenes/n1.jpg") no-repeat center center fixed;
-      background-size: cover; /* 🔑 hace que se adapte siempre */
+      background: #f0f2f5; /* color de fondo neutro */
     }
 
     .login-container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+      background: #fff;
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.4);
       width: 100%;
       max-width: 400px;
+      text-align: center;
+    }
+
+    .login-container img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 20px;
     }
 
     h1 {
-      text-align: center;
       margin-bottom: 20px;
       color: #333;
+      font-size: 1.8rem;
     }
 
     form {
       display: flex;
       flex-direction: column;
+      text-align: left;
     }
 
     label {
-      margin: 10px 0 5px;
+      margin-bottom: 5px;
       font-weight: bold;
+      color: #555;
     }
 
     input {
-      padding: 10px;
-      border-radius: 6px;
+      padding: 12px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       margin-bottom: 15px;
-      font-size: 16px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #007bff;
+      outline: none;
     }
 
     button {
@@ -56,36 +73,75 @@
       color: white;
       padding: 12px;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.2s;
     }
 
     button:hover {
       background: #0056b3;
+      transform: scale(1.03);
     }
 
-    p {
-      text-align: center;
+    p.error {
       color: red;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 25px 15px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      input, button {
+        font-size: 0.95rem;
+      }
+      .login-container img {
+        width: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 20px 10px;
+        border-radius: 10px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      input, button {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+      .login-container img {
+        width: 80px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="login-container">
+    <!-- Imagen centrada -->
+    <img src="/imagenes/n2.jpg" alt="Logo Inventario INA">
+
     <h1>Iniciar sesión</h1>
 
     <% if (typeof error !== 'undefined' && error) { %>
-      <p><%= error %></p>
+      <p class="error"><%= error %></p>
     <% } %>
 
     <form action="/login" method="POST">
       <label for="usuario">Usuario:</label>
-      <input type="text" name="usuario" required />
+      <input type="text" name="usuario" required placeholder="Ingrese su usuario">
 
       <label for="contrasena">Contraseña:</label>
-      <input type="password" name="contrasena" required />
+      <input type="password" name="contrasena" required placeholder="Ingrese su contraseña">
 
       <button type="submit">Entrar</button>
     </form>
