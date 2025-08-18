@@ -3,21 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <title>Login - Inventario INA</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+
+      /* Fondo con imagen */
+      background: url("/imagenes/n1.jpg") no-repeat center center fixed;
+      background-size: cover; /* 🔑 hace que se adapte siempre */
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    p {
+      text-align: center;
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h1>Iniciar sesión</h1>
+  <div class="login-container">
+    <h1>Iniciar sesión</h1>
 
-<% if (typeof error !== 'undefined' && error) { %>
-  <p style="color: red;"><%= error %></p>
-<% } %>
-  <form action="/login" method="POST">
-    <label for="usuario">Usuario:</label>
-    <input type="text" name="usuario" required /><br/>
+    <% if (typeof error !== 'undefined' && error) { %>
+      <p><%= error %></p>
+    <% } %>
 
-    <label for="contrasena">Contraseña:</label>
-    <input type="password" name="contrasena" required /><br/>
+    <form action="/login" method="POST">
+      <label for="usuario">Usuario:</label>
+      <input type="text" name="usuario" required />
 
-    <button type="submit">Entrar</button>
-  </form>
+      <label for="contrasena">Contraseña:</label>
+      <input type="password" name="contrasena" required />
+
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
 </body>
 </html>
